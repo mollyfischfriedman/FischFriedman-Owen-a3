@@ -1,7 +1,8 @@
 ---
 title: "Assignment 3"
 subtitle: "Due at 11:59pm on October 15."
-format: pdf
+author: Brittany Owen and Molly Fisch-Friedman
+format: html
 editor: visual
 ---
 
@@ -23,13 +24,26 @@ The ultimate goal is to gather the table "Historical population" and convert it 
 
 As a first step, read in the html page as an R object. Extract the tables from this object (using the `rvest` package) and save the result as a new object. Follow the instructions if there is an error. Use `str()` on this new object -- it should be a list. Try to find the position of the "Historical population" in this list since we need it in the next step.
 
+```{r}
+page <- read_html("https://en.wikipedia.org/wiki/Grand_Boulevard,_Chicago")
+str(page)
+```
+
 Extract the "Historical population" table from the list and save it as another object. You can use subsetting via `[[…]]` to extract pieces from a list. Print the result.
+
+```{r}
+pop <- html_nodes(page, xpath='//*[contains(concat( " ", @class, " " ), concat( " ", "us-census-pop-left", " " ))]')
+pop <- as.data.frame(html_table(pop))
+pop
+```
 
 You will see that the table needs some additional formatting. We only want rows and columns with actual values (I called the table object `pop`).
 
 ```{r}
-# pop <- pop[2:10, -3]
-# pop
+pop <- pop[2:10, -3]
+pop
+names(pop)[3] <- "Percent Change"
+pop
 ```
 
 ## Expanding to More Pages
