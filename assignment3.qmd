@@ -25,15 +25,19 @@ The ultimate goal is to gather the table "Historical population" and convert it 
 As a first step, read in the html page as an R object. Extract the tables from this object (using the `rvest` package) and save the result as a new object. Follow the instructions if there is an error. Use `str()` on this new object -- it should be a list. Try to find the position of the "Historical population" in this list since we need it in the next step.
 
 ```{r}
+#reading the HTML page in
 page <- read_html("https://en.wikipedia.org/wiki/Grand_Boulevard,_Chicago")
-str(page)
+
+#saving all tables in a list
+tables <- html_table(html_nodes(page, "table"))
+str(tables) #'Historical population' table is the 2nd
+
 ```
 
 Extract the "Historical population" table from the list and save it as another object. You can use subsetting via `[[…]]` to extract pieces from a list. Print the result.
 
 ```{r}
-pop <- html_nodes(page, xpath='//*[contains(concat( " ", @class, " " ), concat( " ", "us-census-pop-left", " " ))]')
-pop <- as.data.frame(html_table(pop))
+pop <- as.data.frame(tables[[2]])
 pop
 ```
 
@@ -50,7 +54,24 @@ pop
 
 That's it for this page. However, we may want to repeat this process for other community areas. The Wikipedia page https://en.wikipedia.org/wiki/Grand_Boulevard,\_Chicago has a section on "Places adjacent to Grand Boulevard, Chicago" at the bottom. Can you find the corresponding table in the list of tables that you created earlier? Extract this table as a new object.
 
+```{r}
+#pulling out the table
+adj <- as.data.frame(tables[[4]])
+adj
+
+#for some reason, the table has 5 rows, so this looks at the first column
+#rows 2 and 4 are blank, so they get deleted
+adj[,1]
+adj <- adj[-c(2,4),]
+adj
+```
+
 Then, grab the community areas east of Grand Boulevard and save them as a character vector. Print the result.
+
+``` {r}
+east <- adj[,3]
+east
+```
 
 We want to use this list to create a loop that extracts the population tables from the Wikipedia pages of these places. To make this work and build valid urls, we need to replace empty spaces in the character vector with underscores. This can be done with `gsub()`, or by hand. The resulting vector should look like this: "Oakland,\_Chicago" "Kenwood,\_Chicago" "Hyde_Park,\_Chicago"
 
