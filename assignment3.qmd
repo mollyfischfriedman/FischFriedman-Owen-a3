@@ -12,6 +12,7 @@ You may work in pairs or individually for this assignment. Make sure you join a 
 library(xml2)
 library(rvest)
 library(tidyverse)
+library(tidytext)
 ```
 
 ## Web Scraping
@@ -143,7 +144,6 @@ tibble <- as_tibble(descriptions)
 Let's clean the data using `tidytext`. If you have trouble with this section, see the example shown in <https://www.tidytextmining.com/tidytext.html>
 
 ```{r}
-library(tidytext)
 
 tibble <- tibble %>% unnest_tokens(word, text) %>% anti_join(stop_words)
 
