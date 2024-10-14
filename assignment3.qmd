@@ -126,7 +126,7 @@ Using a similar loop as in the last section, grab the descriptions of the variou
 descriptions <- c()
 for(i in url_tables) {
 temp <- read_html(i) %>% 
-  html_node("p") %>% 
+  html_nodes("p") %>% 
   html_text() 
   temp <- temp[-1]
   temp <- temp %>% paste(collapse = ' ')
