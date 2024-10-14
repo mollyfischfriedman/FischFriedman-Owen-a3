@@ -46,6 +46,7 @@ You will see that the table needs some additional formatting. We only want rows 
 ```{r}
 pop <- pop[2:10, -3]
 pop
+
 names(pop)[3] <- "Percent Change"
 pop
 ```
@@ -68,7 +69,7 @@ adj
 
 Then, grab the community areas east of Grand Boulevard and save them as a character vector. Print the result.
 
-``` {r}
+```{r}
 east <- adj[,3]
 east
 ```
@@ -92,6 +93,16 @@ url
 
 Finally, extend the loop and add the code that is needed to grab the population tables from each page. Add columns to the original table `pops` using `cbind()`.
 
+```{r}
+url_tables <- c()
+for(i in east) {
+   temp <- paste0("https://en.wikipedia.org/wiki/", gsub("\\s", "\\_", i))
+   url_tables <- c(url_tables, temp)
+   output <- data.frame(url_tables)
+   }
+url_tables
+```
+
 ## Scraping and Analyzing Text Data
 
 Suppose we wanted to take the actual text from the Wikipedia pages instead of just the information in the table. Our goal in this section is to extract the text from the body of the pages, then do some basic text cleaning and analysis.
@@ -99,7 +110,19 @@ Suppose we wanted to take the actual text from the Wikipedia pages instead of ju
 First, scrape just the text without any of the information in the margins or headers. For example, for "Grand Boulevard", the text should start with, "**Grand Boulevard** on the [South Side](https://en.wikipedia.org/wiki/South_Side,_Chicago "South Side, Chicago") of [Chicago](https://en.wikipedia.org/wiki/Chicago "Chicago"), [Illinois](https://en.wikipedia.org/wiki/Illinois "Illinois"), is one of the ...". Make sure all of the text is in one block by using something like the code below (I called my object `description`).
 
 ```{r}
-# description <- description %>% paste(collapse = ' ')
+
+text.dataframe <- data.frame(url_tables)
+text.dataframe$neighborhood <- sub('.https://en.wikipedia.org/wiki/', '', text.dataframe$url_tables) 
+
+
+
+
+for(i in east) {
+   temp <- paste0("https://en.wikipedia.org/wiki/", gsub("\\s", "\\_", i))
+   url_tables <- c(url_tables, temp)
+   output <- data.frame(url_tables)
+   }
+url_tables
 ```
 
 Using a similar loop as in the last section, grab the descriptions of the various communities areas. Make a tibble with two columns: the name of the location and the text describing the location.
