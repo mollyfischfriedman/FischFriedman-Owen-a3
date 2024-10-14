@@ -123,9 +123,9 @@ paragraph <- paragraph %>% paste(collapse = ' ')
 Using a similar loop as in the last section, grab the descriptions of the various communities areas. Make a tibble with two columns: the name of the location and the text describing the location.
 
 ```{r}
-decriptions <- c()
+descriptions <- c()
 for(i in url_tables) {
-temp <- read_html("[[i]]") %>% 
+temp <- read_html(i) %>% 
   html_node("p") %>% 
   html_text() 
   temp <- temp[-1]
