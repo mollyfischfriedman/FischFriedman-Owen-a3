@@ -103,7 +103,15 @@ for(i in east) {
    }
 url_tables
 
-##are we just adding columns and assuming order is the same?
+for(i in url_tables) {
+  for(j in east) {
+east.page <- read_html(i)
+east.tables <- html_table(html_nodes(page, "table"))
+east.pop <- as.data.frame(tables[[2]])
+east.pop <- east.pop[2:10, -3]
+colnames(east.pop) <- paste((j), colnames(east.pop), sep = "_")
+  } 
+}
 ```
 
 ## Scraping and Analyzing Text Data
