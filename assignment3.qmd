@@ -101,6 +101,8 @@ for(i in east) {
    output <- data.frame(url_tables)
    }
 url_tables
+
+##are we just adding columns and assuming order is the same?
 ```
 
 ## Scraping and Analyzing Text Data
@@ -132,14 +134,29 @@ temp <- read_html("[[i]]") %>%
 
 text.dataframe <- data.frame(url_tables)
 text.dataframe$neighborhood <- str_split(text.dataframe$url_tables, '-', simplify = TRUE)
+
+descriptions$name <- c()
+descriptions$name <- text.dataframe$neighborhood
+tibble <- as_tibble(descriptions)
 ```
 
 Let's clean the data using `tidytext`. If you have trouble with this section, see the example shown in <https://www.tidytextmining.com/tidytext.html>
 
 ```{r}
 library(tidytext)
+
+tibble <- tibble %>% unnest_tokens(word, text) %>% anti_join(stop_words)
+
 ```
 
 Create tokens using `unnest_tokens`. Make sure the data is in one-token-per-row format. Remove any stop words within the data. What are the most common words used overall?
 
+```{r}
+wordcount <- cumsum(tibble$word)
+```
+
 Plot the most common words within each location. What are some of the similarities between the locations? What are some of the differences?
+
+```{r}
+plot(tibble$word, tibble$neighborhood)
+```
