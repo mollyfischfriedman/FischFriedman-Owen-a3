@@ -110,22 +110,29 @@ Suppose we wanted to take the actual text from the Wikipedia pages instead of ju
 First, scrape just the text without any of the information in the margins or headers. For example, for "Grand Boulevard", the text should start with, "**Grand Boulevard** on the [South Side](https://en.wikipedia.org/wiki/South_Side,_Chicago "South Side, Chicago") of [Chicago](https://en.wikipedia.org/wiki/Chicago "Chicago"), [Illinois](https://en.wikipedia.org/wiki/Illinois "Illinois"), is one of the ...". Make sure all of the text is in one block by using something like the code below (I called my object `description`).
 
 ```{r}
+paragraph <- page %>%
+html_nodes("p") %>% html_text()
+paragraph <- paragraph[-1]
+paragraph <- paragraph %>% paste(collapse = ' ')
 
-text.dataframe <- data.frame(url_tables)
-text.dataframe$neighborhood <- sub('.https://en.wikipedia.org/wiki/', '', text.dataframe$url_tables) 
-
-
-
-
-for(i in east) {
-   temp <- paste0("https://en.wikipedia.org/wiki/", gsub("\\s", "\\_", i))
-   url_tables <- c(url_tables, temp)
-   output <- data.frame(url_tables)
-   }
-url_tables
 ```
 
 Using a similar loop as in the last section, grab the descriptions of the various communities areas. Make a tibble with two columns: the name of the location and the text describing the location.
+
+```{r}
+decriptions <- c()
+for(i in url_tables) {
+temp <- read_html("[[i]]") %>% 
+  html_node("p") %>% 
+  html_text() 
+  temp <- temp[-1]
+  temp <- temp %>% paste(collapse = ' ')
+  descriptions <- c(descriptions, temp)
+   output <- data.frame(descriptions)}
+
+text.dataframe <- data.frame(url_tables)
+text.dataframe$neighborhood <- str_split(text.dataframe$url_tables, '-', simplify = TRUE)
+```
 
 Let's clean the data using `tidytext`. If you have trouble with this section, see the example shown in <https://www.tidytextmining.com/tidytext.html>
 
