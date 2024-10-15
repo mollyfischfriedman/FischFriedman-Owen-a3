@@ -122,6 +122,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ✖ dplyr::lag()            masks stats::lag()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="web-scraping" class="level2">
 <h2 class="anchored" data-anchor-id="web-scraping">Web Scraping</h2>
@@ -130,20 +131,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The ultimate goal is to gather the table “Historical population” and convert it to a <code>data.frame</code>.</p>
 <p>As a first step, read in the html page as an R object. Extract the tables from this object (using the <code>rvest</code> package) and save the result as a new object. Follow the instructions if there is an error. Use <code>str()</code> on this new object – it should be a list. Try to find the position of the “Historical population” in this list since we need it in the next step.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>page <span class="ot">&lt;-</span> <span class="fu">read_html</span>(<span class="st">"https://en.wikipedia.org/wiki/Grand_Boulevard,_Chicago"</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(page)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#reading the HTML page in</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>page <span class="ot">&lt;-</span> <span class="fu">read_html</span>(<span class="st">"https://en.wikipedia.org/wiki/Grand_Boulevard,_Chicago"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#saving all tables in a list</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>tables <span class="ot">&lt;-</span> <span class="fu">html_table</span>(<span class="fu">html_nodes</span>(page, <span class="st">"table"</span>))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(tables) <span class="co">#'Historical population' table is the 2nd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>List of 2
- $ node:&lt;externalptr&gt; 
- $ doc :&lt;externalptr&gt; 
- - attr(*, "class")= chr [1:2] "xml_document" "xml_node"</code></pre>
+<pre><code>List of 7
+ $ : tibble [26 × 2] (S3: tbl_df/tbl/data.frame)
+  ..$ Grand Boulevard: chr [1:26] "Community area" "Community Area 38 - Grand Boulevard" "The Harold Washington Cultural Center" "Location within the city of Chicago" ...
+  ..$ Grand Boulevard: chr [1:26] "Community area" "Community Area 38 - Grand Boulevard" "The Harold Washington Cultural Center" "Location within the city of Chicago" ...
+ $ : tibble [11 × 4] (S3: tbl_df/tbl/data.frame)
+  ..$ Census                                                                                                                                                                                                : chr [1:11] "1930" "1940" "1950" "1960" ...
+  ..$ Pop.                                                                                                                                                                                                  : chr [1:11] "87,005" "103,256" "114,557" "80,036" ...
+  ..$ .mw-parser-output .sr-only{border:0;clip:rect(0,0,0,0);clip-path:polygon(0px 0px,0px 0px,0px 0px);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap}Note: chr [1:11] "" "" "" "" ...
+  ..$ %±                                                                                                                                                                                                    : chr [1:11] "—" "18.7%" "10.9%" "−30.1%" ...
+ $ : tibble [6 × 17] (S3: tbl_df/tbl/data.frame)
+  ..$ .mw-parser-output .navbar{display:inline;font-size:88%;font-weight:normal}.mw-parser-output .navbar-collapse{float:left;text-align:left}.mw-parser-output .navbar-boxtext{word-spacing:0}.mw-parser-output .navbar ul{display:inline-block;white-space:nowrap;line-height:inherit}.mw-parser-output .navbar-brackets::before{margin-right:-0.125em;content:"[ "}.mw-parser-output .navbar-brackets::after{margin-left:-0.125em;content:" ]"}.mw-parser-output .navbar li{word-spacing:-0.125em}.mw-parser-output .navbar a&gt;span,.mw-parser-output .navbar a&gt;abbr{text-decoration:inherit}.mw-parser-output .navbar-mini abbr{font-variant:small-caps;border-bottom:none;text-decoration:none;cursor:inherit}.mw-parser-output .navbar-ct-full{font-size:114%;margin:0 7em}.mw-parser-output .navbar-ct-mini{font-size:114%;margin:0 4em}html.skin-theme-clientpref-night .mw-parser-output .navbar li a abbr{color:var(--color-base)!important}@media(prefers-color-scheme:dark){html.skin-theme-clientpref-os .mw-parser-output .navbar li a abbr{color:var(--color-base)!important}}@media print{.mw-parser-output .navbar{display:none!important}}vtePlaces adjacent to Grand Boulevard, Chicago: chr [1:6] "Armour Square, Chicago\nDouglas, Chicago\nOakland, Chicago\n\n\n\nFuller Park, Chicago\n\nGrand Boulevard, Chic"| __truncated__ "Armour Square, Chicago" "" "Fuller Park, Chicago" ...
+  ..$ .mw-parser-output .navbar{display:inline;font-size:88%;font-weight:normal}.mw-parser-output .navbar-collapse{float:left;text-align:left}.mw-parser-output .navbar-boxtext{word-spacing:0}.mw-parser-output .navbar ul{display:inline-block;white-space:nowrap;line-height:inherit}.mw-parser-output .navbar-brackets::before{margin-right:-0.125em;content:"[ "}.mw-parser-output .navbar-brackets::after{margin-left:-0.125em;content:" ]"}.mw-parser-output .navbar li{word-spacing:-0.125em}.mw-parser-output .navbar a&gt;span,.mw-parser-output .navbar a&gt;abbr{text-decoration:inherit}.mw-parser-output .navbar-mini abbr{font-variant:small-caps;border-bottom:none;text-decoration:none;cursor:inherit}.mw-parser-output .navbar-ct-full{font-size:114%;margin:0 7em}.mw-parser-output .navbar-ct-mini{font-size:114%;margin:0 4em}html.skin-theme-clientpref-night .mw-parser-output .navbar li a abbr{color:var(--color-base)!important}@media(prefers-color-scheme:dark){html.skin-theme-clientpref-os .mw-parser-output .navbar li a abbr{color:var(--color-base)!important}}@media print{.mw-parser-output .navbar{display:none!important}}vtePlaces adjacent to Grand Boulevard, Chicago: chr [1:6] "Armour Square, Chicago\nDouglas, Chicago\nOakland, Chicago\n\n\n\nFuller Park, Chicago\n\nGrand Boulevard, Chic"| __truncated__ "Douglas, Chicago" "" "Grand Boulevard, Chicago" ...
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : chr [1:6] "Armour Square, Chicago" "Oakland, Chicago" "" "Kenwood, Chicago" ...
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : chr [1:6] "Douglas, Chicago" NA NA NA ...
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : chr [1:6] "Oakland, Chicago" NA NA NA ...
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : logi [1:6] NA NA NA NA NA NA
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : logi [1:6] NA NA NA NA NA NA
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : logi [1:6] NA NA NA NA NA NA
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : chr [1:6] "Fuller Park, Chicago" NA NA NA ...
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : chr [1:6] "Grand Boulevard, Chicago" NA NA NA ...
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : chr [1:6] "Kenwood, Chicago" NA NA NA ...
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : logi [1:6] NA NA NA NA NA NA
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : logi [1:6] NA NA NA NA NA NA
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : logi [1:6] NA NA NA NA NA NA
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : chr [1:6] "New City, Chicago" NA NA NA ...
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : chr [1:6] "Washington Park, Chicago" NA NA NA ...
+  ..$                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    : chr [1:6] "Hyde Park, Chicago" NA NA NA ...
+ $ : tibble [5 × 3] (S3: tbl_df/tbl/data.frame)
+  ..$ X1: chr [1:5] "Armour Square, Chicago" "" "Fuller Park, Chicago" "" ...
+  ..$ X2: chr [1:5] "Douglas, Chicago" "" "Grand Boulevard, Chicago" "" ...
+  ..$ X3: chr [1:5] "Oakland, Chicago" "" "Kenwood, Chicago" "" ...
+ $ : tibble [9 × 2] (S3: tbl_df/tbl/data.frame)
+  ..$ vteCommunity areas in Chicago: chr [1:9] "Far North" "Northwest" "North" "Central" ...
+  ..$ vteCommunity areas in Chicago: chr [1:9] "Rogers Park\nWest Ridge\nUptown\nLincoln Square\nEdison Park\nNorwood Park\nJefferson Park\nForest Glen\nNorth "| __truncated__ "Portage Park\nIrving Park\nDunning\nMontclare\nBelmont Cragin\nHermosa" "North Center\nLake View\nLincoln Park\nAvondale\nLogan Square" "Near North Side\nThe Loop\nNear South Side" ...
+ $ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)
+  ..$ vteNeighborhoods in Chicago: chr [1:2] "Recognized by the city" "Other districts and areas recognized by the community"
+  ..$ vteNeighborhoods in Chicago: chr [1:2] "Albany Park\nAndersonville\nArcher Heights\nAshburn\nAuburn Gresham\nAvalon Park\nAvondale\nBack of the Yards\n"| __truncated__ "Altgeld Gardens\nArmour Square\nBig Oaks\nBowmanville\nBoystown\nBudlong Woods\nBuena Park\nCanaryville\nCentra"| __truncated__
+ $ : tibble [2 × 2] (S3: tbl_df/tbl/data.frame)
+  ..$ vte Chicago: chr [1:2] "Architecture\nBeaches\nClimate\nColleges and universities\nCommunity areas\nCrime\ngangs\nCulture\nDemographics"| __truncated__ "Portal\n Category"
+  ..$ vte Chicago: chr [1:2] "Architecture\nBeaches\nClimate\nColleges and universities\nCommunity areas\nCrime\ngangs\nCulture\nDemographics"| __truncated__ "Portal\n Category"</code></pre>
 </div>
 </div>
 <p>Extract the “Historical population” table from the list and save it as another object. You can use subsetting via <code>[[…]]</code> to extract pieces from a list. Print the result.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">&lt;-</span> <span class="fu">html_nodes</span>(page, <span class="at">xpath=</span><span class="st">'//*[contains(concat( " ", @class, " " ), concat( " ", "us-census-pop-left", " " ))]'</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">html_table</span>(pop))</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>pop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(tables[[<span class="dv">2</span>]])</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Census    Pop.
 1    1930  87,005
@@ -157,7 +197,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 9    2010  21,929
 10   2020  24,589
 11 [3][1]  [3][1]
-   .mw.parser.output..sr.only.border.0.clip.rect.0.0.0.0..clip.path.polygon.0px.0px.0px.0px.0px.0px..height.1px.margin..1px.overflow.hidden.padding.0.position.absolute.width.1px.white.space.nowrap.Note
+   .mw-parser-output .sr-only{border:0;clip:rect(0,0,0,0);clip-path:polygon(0px 0px,0px 0px,0px 0px);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap}Note
 1                                                                                                                                                                                                        
 2                                                                                                                                                                                                        
 3                                                                                                                                                                                                        
@@ -169,7 +209,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 9                                                                                                                                                                                                        
 10                                                                                                                                                                                                       
 11                                                                                                                                                                                                 [3][1]
-      X..
+       %±
 1       —
 2   18.7%
 3   10.9%
@@ -185,10 +225,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>You will see that the table needs some additional formatting. We only want rows and columns with actual values (I called the table object <code>pop</code>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">&lt;-</span> pop[<span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>, <span class="sc">-</span><span class="dv">3</span>]</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">&lt;-</span> pop[<span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>,<span class="sc">-</span><span class="dv">3</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>pop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   Census    Pop.    X..
+<pre><code>   Census    Pop.     %±
 2    1940 103,256  18.7%
 3    1950 114,557  10.9%
 4    1960  80,036 −30.1%
@@ -199,54 +239,218 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 9    2010  21,929 −21.7%
 10   2020  24,589  12.1%</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(pop)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">"Percent Change"</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>pop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(pop)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">"Grand Boulevard Pop."</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(pop)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">"Grand Boulevard % Change"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>   Census    Pop. Percent Change
-2    1940 103,256          18.7%
-3    1950 114,557          10.9%
-4    1960  80,036         −30.1%
-5    1970  80,166           0.2%
-6    1980  53,741         −33.0%
-7    1990  35,897         −33.2%
-8    2000  28,006         −22.0%
-9    2010  21,929         −21.7%
-10   2020  24,589          12.1%</code></pre>
+<pre><code>   Census Grand Boulevard Pop. Grand Boulevard % Change
+2    1940              103,256                    18.7%
+3    1950              114,557                    10.9%
+4    1960               80,036                   −30.1%
+5    1970               80,166                     0.2%
+6    1980               53,741                   −33.0%
+7    1990               35,897                   −33.2%
+8    2000               28,006                   −22.0%
+9    2010               21,929                   −21.7%
+10   2020               24,589                    12.1%</code></pre>
 </div>
 </div>
 </section>
 <section id="expanding-to-more-pages" class="level2">
 <h2 class="anchored" data-anchor-id="expanding-to-more-pages">Expanding to More Pages</h2>
 <p>That’s it for this page. However, we may want to repeat this process for other community areas. The Wikipedia page https://en.wikipedia.org/wiki/Grand_Boulevard,_Chicago has a section on “Places adjacent to Grand Boulevard, Chicago” at the bottom. Can you find the corresponding table in the list of tables that you created earlier? Extract this table as a new object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#pulling out the table</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>adj <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(tables[[<span class="dv">4</span>]])</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>adj</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      X1                       X2                 X3
+1 Armour Square, Chicago         Douglas, Chicago   Oakland, Chicago
+2                                                                   
+3   Fuller Park, Chicago Grand Boulevard, Chicago   Kenwood, Chicago
+4                                                                   
+5      New City, Chicago Washington Park, Chicago Hyde Park, Chicago</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#for some reason, the table has 5 rows, so this looks at the first column</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#rows 2 and 4 are blank, so they get deleted</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>adj[,<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Armour Square, Chicago" ""                       "Fuller Park, Chicago"  
+[4] ""                       "New City, Chicago"     </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>adj <span class="ot">&lt;-</span> adj[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>),]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>adj</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      X1                       X2                 X3
+1 Armour Square, Chicago         Douglas, Chicago   Oakland, Chicago
+3   Fuller Park, Chicago Grand Boulevard, Chicago   Kenwood, Chicago
+5      New City, Chicago Washington Park, Chicago Hyde Park, Chicago</code></pre>
+</div>
+</div>
 <p>Then, grab the community areas east of Grand Boulevard and save them as a character vector. Print the result.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>east <span class="ot">&lt;-</span> adj[,<span class="dv">3</span>]</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>east</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Oakland, Chicago"   "Kenwood, Chicago"   "Hyde Park, Chicago"</code></pre>
+</div>
+</div>
 <p>We want to use this list to create a loop that extracts the population tables from the Wikipedia pages of these places. To make this work and build valid urls, we need to replace empty spaces in the character vector with underscores. This can be done with <code>gsub()</code>, or by hand. The resulting vector should look like this: “Oakland,_Chicago” “Kenwood,_Chicago” “Hyde_Park,_Chicago”</p>
 <p>To prepare the loop, we also want to copy our <code>pop</code> table and rename it as <code>pops</code>. In the loop, we append this table by adding columns from the other community areas.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pops &lt;- pop</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pops <span class="ot">&lt;-</span> pop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Build a small loop to test whether you can build valid urls using the vector of places and pasting each element of it after <code>https://en.wikipedia.org/wiki/</code> in a for loop. Calling <code>url</code> shows the last url of this loop, which should be <code>https://en.wikipedia.org/wiki/Hyde_Park,_Chicago</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># for(i in places_east) {</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   url &lt;- ...</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   }</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># url</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> east) {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>   url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://en.wikipedia.org/wiki/"</span>, <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s"</span>, <span class="st">"</span><span class="sc">\\</span><span class="st">_"</span>, i))</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>   }</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>url</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "https://en.wikipedia.org/wiki/Hyde_Park,_Chicago"</code></pre>
+</div>
 </div>
 <p>Finally, extend the loop and add the code that is needed to grab the population tables from each page. Add columns to the original table <code>pops</code> using <code>cbind()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>url_tables <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> east) {</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>   temp <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://en.wikipedia.org/wiki/"</span>, <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">s"</span>, <span class="st">"</span><span class="sc">\\</span><span class="st">_"</span>, i))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>   url_tables <span class="ot">&lt;-</span> <span class="fu">c</span>(url_tables, temp)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>   output <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(url_tables)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>   }</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>url_tables</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "https://en.wikipedia.org/wiki/Oakland,_Chicago"  
+[2] "https://en.wikipedia.org/wiki/Kenwood,_Chicago"  
+[3] "https://en.wikipedia.org/wiki/Hyde_Park,_Chicago"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>all.cities <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="fu">seq_along</span>(url_tables)) {</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    east.page <span class="ot">&lt;-</span> <span class="fu">read_html</span>(url_tables[i])</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    east.tables <span class="ot">&lt;-</span> <span class="fu">html_table</span>(<span class="fu">html_nodes</span>(east.page, <span class="st">"table"</span>))</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    east.pop <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(east.tables[[<span class="dv">2</span>]])</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    east.pop <span class="ot">&lt;-</span> east.pop[<span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>,<span class="sc">-</span><span class="dv">3</span>]</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    city.name <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">,.+$"</span>, <span class="st">""</span>, east[i])</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colnames</span>(east.pop)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(city.name, <span class="st">" Pop."</span>)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">colnames</span>(east.pop)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(city.name, <span class="st">" % Change"</span>)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    all.cities[[city.name]] <span class="ot">&lt;-</span> east.pop</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>pops <span class="ot">&lt;-</span> <span class="fu">cbind</span>(pops, all.cities[[<span class="st">"Oakland"</span>]], all.cities[[<span class="st">"Kenwood"</span>]],</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>              all.cities[[<span class="st">"Hyde Park"</span>]])</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>pops</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Census Grand Boulevard Pop. Grand Boulevard % Change Census Oakland Pop.
+2    1940              103,256                    18.7%   1920       16,540
+3    1950              114,557                    10.9%   1930       14,962
+4    1960               80,036                   −30.1%   1940       14,500
+5    1970               80,166                     0.2%   1950       24,464
+6    1980               53,741                   −33.0%   1960       24,378
+7    1990               35,897                   −33.2%   1970       18,291
+8    2000               28,006                   −22.0%   1980       16,748
+9    2010               21,929                   −21.7%   1990        8,197
+10   2020               24,589                    12.1%   2000        6,110
+   Oakland % Change Census Kenwood Pop. Kenwood % Change Census Hyde Park Pop.
+2             20.2%   1940       29,611             9.9%   1940         50,550
+3             −9.5%   1950       35,705            20.6%   1950         55,206
+4             −3.1%   1960       41,533            16.3%   1960         45,577
+5             68.7%   1970       26,890           −35.3%   1970         33,531
+6             −0.4%   1980       21,974           −18.3%   1980         31,198
+7            −25.0%   1990       18,178           −17.3%   1990         28,630
+8             −8.4%   2000       18,363             1.0%   2000         29,920
+9            −51.1%   2010       17,841            −2.8%   2010         25,681
+10           −25.5%   2020       19,116             7.1%   2020         29,456
+   Hyde Park % Change
+2                5.3%
+3                9.2%
+4              −17.4%
+5              −26.4%
+6               −7.0%
+7               −8.2%
+8                4.5%
+9              −14.2%
+10              14.7%</code></pre>
+</div>
+</div>
 </section>
 <section id="scraping-and-analyzing-text-data" class="level2">
 <h2 class="anchored" data-anchor-id="scraping-and-analyzing-text-data">Scraping and Analyzing Text Data</h2>
 <p>Suppose we wanted to take the actual text from the Wikipedia pages instead of just the information in the table. Our goal in this section is to extract the text from the body of the pages, then do some basic text cleaning and analysis.</p>
 <p>First, scrape just the text without any of the information in the margins or headers. For example, for “Grand Boulevard”, the text should start with, “<strong>Grand Boulevard</strong> on the <a href="https://en.wikipedia.org/wiki/South_Side,_Chicago" title="South Side, Chicago">South Side</a> of <a href="https://en.wikipedia.org/wiki/Chicago" title="Chicago">Chicago</a>, <a href="https://en.wikipedia.org/wiki/Illinois" title="Illinois">Illinois</a>, is one of the …”. Make sure all of the text is in one block by using something like the code below (I called my object <code>description</code>).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># description &lt;- description %&gt;% paste(collapse = ' ')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>paragraph <span class="ot">&lt;-</span> page <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">html_nodes</span>(<span class="st">"p"</span>) <span class="sc">%&gt;%</span> <span class="fu">html_text</span>()</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>paragraph <span class="ot">&lt;-</span> paragraph[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>paragraph <span class="ot">&lt;-</span> paragraph <span class="sc">%&gt;%</span> <span class="fu">paste</span>(<span class="at">collapse =</span> <span class="st">' '</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Using a similar loop as in the last section, grab the descriptions of the various communities areas. Make a tibble with two columns: the name of the location and the text describing the location.</p>
-<p>Let’s clean the data using <code>tidytext</code>. If you have trouble with this section, see the example shown in <a href="https://www.tidytextmining.com/tidytext.html" class="uri">https://www.tidytextmining.com/tidytext.html</a></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>descriptions <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> url_tables) {</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  temp <span class="ot">&lt;-</span> <span class="fu">read_html</span>(i) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">html_nodes</span>(<span class="st">"p"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">html_text</span>() </span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  temp <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span> <span class="fu">paste</span>(<span class="at">collapse =</span> <span class="st">' '</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  descriptions <span class="ot">&lt;-</span> <span class="fu">c</span>(descriptions, temp)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  output <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(descriptions)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>city.names <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">,.+$"</span>, <span class="st">""</span>, east)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">cbind</span>(city.names, output)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>tibble <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Let’s clean the data using <code>tidytext</code>. If you have trouble with this section, see the example shown in <a href="https://www.tidytextmining.com/tidytext.html" class="uri">https://www.tidytextmining.com/tidytext.html</a></p>
 <p>Create tokens using <code>unnest_tokens</code>. Make sure the data is in one-token-per-row format. Remove any stop words within the data. What are the most common words used overall?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>tibble.tidy <span class="ot">&lt;-</span> tibble <span class="sc">%&gt;%</span> <span class="fu">unnest_tokens</span>(word, descriptions) </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>tibble.tidy <span class="ot">&lt;-</span> tibble.tidy <span class="sc">%&gt;%</span> <span class="fu">anti_join</span>(stop_words)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(word)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>wordcount <span class="ot">&lt;-</span> tibble.tidy <span class="sc">%&gt;%</span> <span class="fu">count</span>(word, <span class="at">sort=</span>T)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>wordcount</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,073 × 2
+   word             n
+   &lt;chr&gt;        &lt;int&gt;
+ 1 park            84
+ 2 hyde            75
+ 3 chicago         50
+ 4 kenwood         40
+ 5 street          34
+ 6 south           27
+ 7 oakland         25
+ 8 community       23
+ 9 lake            23
+10 neighborhood    23
+# ℹ 1,063 more rows</code></pre>
+</div>
+</div>
+<p>The 10 most common words are: park, hyde, chicago, kenwood, street, south, oakland, community, lake, and neighborhood.</p>
 <p>Plot the most common words within each location. What are some of the similarities between the locations? What are some of the differences?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>wordcount.bycity <span class="ot">&lt;-</span> tibble.tidy <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(city.names) <span class="sc">%&gt;%</span> <span class="fu">count</span>(word, <span class="at">sort=</span>T) <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>wordcount.hydepark <span class="ot">&lt;-</span> wordcount.bycity <span class="sc">%&gt;%</span> <span class="fu">filter</span>(city.names<span class="sc">==</span><span class="st">"Hyde Park"</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>wordcount.kenwood <span class="ot">&lt;-</span> wordcount.bycity <span class="sc">%&gt;%</span> <span class="fu">filter</span>(city.names<span class="sc">==</span><span class="st">"Kenwood"</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>wordcount.oakland <span class="ot">&lt;-</span> wordcount.bycity <span class="sc">%&gt;%</span> <span class="fu">filter</span>(city.names<span class="sc">==</span><span class="st">"Oakland"</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>wordcount.bycity.top10 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(wordcount.hydepark[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,], wordcount.kenwood[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,],</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                                wordcount.oakland[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,])</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(wordcount.bycity.top10, <span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(word, n), <span class="at">y=</span>n, <span class="at">fill=</span>city.names)) <span class="sc">+</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">"identity"</span>, <span class="at">position=</span><span class="fu">position_dodge</span>()) <span class="sc">+</span> <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Top 10 Words On Each Neighborhood Page"</span>, <span class="at">y=</span><span class="st">"Word Count"</span>,</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span><span class="st">"Word"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="assignment3_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The above graph shows the top 10 words on each of the Wikipedia pages for the neighborhoods of interest, along with their counts. For all pages, the city name is the most popular word (note that because Hyde Park is two words that were split up when tokenized, this is based on “Hyde”). Additionally, Chicago is in the top 10 most popular words on all pages.</p>
+<p>Hyde Park has more words than the other pages, as their top words have higher counts. Additionally, while several other words, like park, street, south, lake, and community, overlap in the top 10 words on two pages, there are unique words in the top 10. Oakland appears to have several words in the top 10 relating to construction, like housing, homes, and building. Hyde Park, which is where the University of Chicago is, has university in its top 10.</p>
 </section>
 
 </main>
