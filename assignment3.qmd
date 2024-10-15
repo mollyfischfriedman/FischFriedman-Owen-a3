@@ -103,6 +103,8 @@ for(i in east) {
    }
 url_tables
 
+#MOLLY - This produces three data frames named after their city. However, each data frame has the values only for the last instance of 'j'. Any thoughts?
+
 for(i in url_tables) {
   for(j in east) {
 east.page <- read_html(i)
@@ -110,6 +112,8 @@ east.tables <- html_table(html_nodes(page, "table"))
 east.pop <- as.data.frame(tables[[2]])
 east.pop <- east.pop[2:10, -3]
 colnames(east.pop) <- paste((j), colnames(east.pop), sep = "_")
+output <- data.frame(east.pop)
+assign( paste((j)), output)
   } 
 }
 ```
