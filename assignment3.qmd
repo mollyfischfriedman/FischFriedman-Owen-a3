@@ -130,7 +130,7 @@ First, scrape just the text without any of the information in the margins or hea
 
 ```{r}
 paragraph <- page %>%
-html_nodes("p") %>% html_text()
+  html_nodes("p") %>% html_text()
 paragraph <- paragraph[-1]
 paragraph <- paragraph %>% paste(collapse = ' ')
 
@@ -141,36 +141,49 @@ Using a similar loop as in the last section, grab the descriptions of the variou
 ```{r}
 descriptions <- c()
 for(i in url_tables) {
-temp <- read_html(i) %>% 
-  html_nodes("p") %>% 
-  html_text() 
-  temp <- temp[-1]
+  temp <- read_html(i) %>% 
+    html_nodes("p") %>% 
+    html_text() 
   temp <- temp %>% paste(collapse = ' ')
   descriptions <- c(descriptions, temp)
-   output <- data.frame(descriptions)}
+  output <- data.frame(descriptions)
+  }
 
-output$names <- east
-
+city.names <- gsub("\\,.+$", "", east)
+output <- cbind(city.names, output)
 tibble <- as_tibble(output)
 ```
 
 Let's clean the data using `tidytext`. If you have trouble with this section, see the example shown in <https://www.tidytextmining.com/tidytext.html>
 
-```{r}
-
-tibble.tidy <- tibble %>% unnest_tokens(tibble$descriptions) 
-#%>% anti_join(stop_words)
-
-```
-
 Create tokens using `unnest_tokens`. Make sure the data is in one-token-per-row format. Remove any stop words within the data. What are the most common words used overall?
 
 ```{r}
-wordcount <- cumsum(tibble$word)
+tibble.tidy <- tibble %>% unnest_tokens(word, descriptions) 
+tibble.tidy <- tibble.tidy %>% anti_join(stop_words)
+
+wordcount <- tibble.tidy %>% count(word, sort=T)
+wordcount
 ```
+
+The 10 most common words are: park, hyde, chicago, kenwood, street, south, oakland, community, lake, and neighborhood.
 
 Plot the most common words within each location. What are some of the similarities between the locations? What are some of the differences?
 
 ```{r}
-plot(tibble$word, tibble$neighborhood)
+wordcount.bycity <- tibble.tidy %>% group_by(city.names) %>% count(word, sort=T) %>%
+  arrange(desc(n))
+wordcount.hydepark <- wordcount.bycity %>% filter(city.names=="Hyde Park")
+wordcount.kenwood <- wordcount.bycity %>% filter(city.names=="Kenwood")
+wordcount.oakland <- wordcount.bycity %>% filter(city.names=="Oakland")
+wordcount.bycity.top10 <- rbind(wordcount.hydepark[1:10,], wordcount.kenwood[1:10,],
+                                wordcount.oakland[1:10,])
+ggplot(wordcount.bycity.top10, aes(x=reorder(word, n), y=n, fill=city.names)) +
+  geom_bar(stat="identity", position=position_dodge()) + coord_flip() +
+  labs(title="Top 10 Words On Each Neighborhood Page", y="Word Count",
+       x="Word")
 ```
+
+The above graph shows the top 10 words on each of the Wikipedia pages for the neighborhoods of interest, along with their counts. For all pages, the city name is the most popular word (note that because Hyde Park is two words that were split up when tokenized, this is based on "Hyde"). Additionally, Chicago is in the top 10 most popular words on all pages.
+
+Hyde Park has more words than the other pages, as their top words have higher counts. Additionally, while several other words, like park, street, south, lake, and community, overlap in the top 10 words on two pages, there are unique words in the top 10. Oakland appears to have several words in the top 10 relating to construction, like housing, homes, and building. Hyde Park, which is where the University of Chicago is, has university in its top 10.
