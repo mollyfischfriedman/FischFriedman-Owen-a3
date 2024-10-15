@@ -154,7 +154,8 @@ Let's clean the data using `tidytext`. If you have trouble with this section, se
 
 ```{r}
 
-tibble <- tibble %>% unnest_tokens(word, text) %>% anti_join(stop_words)
+tibble.tidy <- tibble %>% unnest_tokens(tibble$descriptions) 
+#%>% anti_join(stop_words)
 
 ```
 
